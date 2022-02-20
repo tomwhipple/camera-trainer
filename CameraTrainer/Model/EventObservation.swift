@@ -17,7 +17,7 @@ struct EventObservation: Hashable, Codable, Identifiable {
     var id: Int {event_observation_id}
     
     var url: URL? {
-        URL(string:video_url) ?? Bundle.main.url(forResource: video_file, withExtension: "")
+        URL(string:video_url)
     }
     
     var labels: [String]? = [String]()
