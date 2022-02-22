@@ -10,12 +10,15 @@ import SwiftUI
 @main
 struct CameraTrainerApp: App {
     
-    @StateObject private var modelData = ModelData()
+    @StateObject private var manager = DataManager()
+//    @StateObject private var modelData = ModelData()
 
     var body: some Scene {
         WindowGroup {
             ContentView()
-                .environmentObject(modelData)
+                .environmentObject(manager)
+                //.environmentObject(modelData)
+
         }
     }
 }

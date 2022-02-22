@@ -8,38 +8,31 @@
 import SwiftUI
 
 struct LabelingView: View {
-    @EnvironmentObject var modelData: ModelData
-    var event: EventObservation
+    @Binding var event: EventObservation
+    @EnvironmentObject var manager: DataManager
     
-    var obsIdx: Int {
-        modelData.uncategorized.firstIndex(where:{ $0.id == event.id })!
-    }
+//    var obsIdx: Int {
+//        modelData.uncategorized.firstIndex(where:{ $0.id == event.id })!
+//    }
         
     var body: some View {
         VStack {
             VideoView(videoURL: event.url)
-            LabelEntryView()
-            List {
-                ForEach(modelData.labels, id: \.self) { labelText in
-                    let isSet = event.labels?.contains(labelText) ?? false
-                    Button {
-                        if isSet {
-                            modelData.uncategorized[obsIdx].removeLabel(labelText)
-                        }
-                        else {
-                            modelData.uncategorized[obsIdx].insertLabel(labelText)
-                        }
-                        
-                    } label: {
-                        Label(labelText, systemImage:isSet ?"checkmark.circle.fill":"circle")
-                            .foregroundColor(isSet ? .green : .gray)
-                    }
-                }
-
+            HStack(alignment: .top) {
+                Text("\(event.id)")
+                Spacer()
+                Text(event.capture_time)
+                Spacer()
+                Text(event.scene_name)
             }
-
+            .font(.footnote)
+            .multilineTextAlignment(.leading)
+            .foregroundColor(.gray)
+            .padding(.horizontal)
+            LabelEntryView()
+            LabelSelectionView(event:$event)
             Button {
-                    
+                    // TODO upload event!
                 } label: {
                     Text("Commit")
                         .frame(maxWidth:.infinity)
@@ -50,15 +43,13 @@ struct LabelingView: View {
                 .clipShape(Capsule())
                 .padding()
 
-            Spacer()
         }
     }
 }
 
 struct LabelingView_Previews: PreviewProvider {
-    static var modelData = ModelData()
     
     static var previews: some View {
-        LabelingView(event: modelData.uncategorized[0]).environmentObject(modelData)
+        LabelingView(event: .constant(EventObservation.sampleData[0])).environmentObject(DataManager())
     }
 }

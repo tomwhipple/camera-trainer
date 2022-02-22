@@ -9,16 +9,16 @@ import SwiftUI
 
 struct LabelEntryView: View {
     @State private var newLabel = String("")
-    @EnvironmentObject var modelData: ModelData
+    @EnvironmentObject var manager: DataManager
     
     var body: some View {
         HStack {
             TextField("Add a label", text: $newLabel)
                 .disableAutocorrection(true)
             Button {
-                if (!newLabel.isEmpty && !modelData.labels.contains(newLabel)){
-                    modelData.labels.append(newLabel.lowercased())
-                    modelData.labels.sort()
+                if (!newLabel.isEmpty && !manager.labels.contains(newLabel)){
+                    manager.labels.append(newLabel.lowercased())
+                    manager.labels.sort()
                     newLabel = ""
                 }
             } label: {
@@ -32,6 +32,6 @@ struct LabelEntryView: View {
 
 struct LabelEntryView_Previews: PreviewProvider {
     static var previews: some View {
-        LabelEntryView()
+        LabelEntryView().environmentObject(DataManager())
     }
 }

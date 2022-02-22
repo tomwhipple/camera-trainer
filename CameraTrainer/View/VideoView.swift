@@ -9,27 +9,24 @@ import SwiftUI
 import AVKit
 
 struct VideoView: View {
-    var videoURL: URL? = nil
-    
-    private var player: AVPlayer? = nil
-    
-    init(videoURL: URL?) {
-        // is there a better way to do this??
-        if videoURL == nil {
-            return
-        }
-        self.videoURL = videoURL
-        self.player = AVPlayer(url: self.videoURL!)
-    }
+    let videoURL: URL?
+    @State private var player: AVPlayer? = nil
     
      var body: some View {
-         if player != nil {
-             VideoPlayer(player: player)
-                     .aspectRatio(1.7, contentMode:ContentMode.fit)
-                     .onAppear { player?.play() }
+         VStack {
+             if player != nil {
+                 VideoPlayer(player: player)
+                         .aspectRatio(1.7, contentMode:ContentMode.fit)
+                         .onAppear { player?.play() }
+             }
+             else {
+                 Text("Video not available")
+             }
          }
-         else {
-             Text("Video not available")
+         .onAppear {
+             if player == nil && videoURL != nil {
+                 player = AVPlayer(url: videoURL!)
+             }
          }
      }
 }

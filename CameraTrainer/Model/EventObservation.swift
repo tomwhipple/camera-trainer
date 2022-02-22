@@ -13,6 +13,7 @@ struct EventObservation: Hashable, Codable, Identifiable {
     var scene_name: String
     private var video_file: String
     private var video_url: String
+    var labels: [String] = []
     
     var id: Int {event_observation_id}
     
@@ -20,15 +21,26 @@ struct EventObservation: Hashable, Codable, Identifiable {
         URL(string:video_url)
     }
     
-    var labels: [String]? = [String]()
-    
     mutating func insertLabel(_ labelText: String) {
-        labels?.append(labelText)
+        labels.append(labelText)
     }
 
     mutating func removeLabel(_ labelText: String) {
-        if let lblIdx = labels?.firstIndex(of: labelText) {
-            labels?.remove(at: lblIdx)
+        if let lblIdx = labels.firstIndex(of: labelText) {
+            labels.remove(at: lblIdx)
         }
     }
+}
+
+//extension EventObservation {
+//    struct EventLabel: Hashable, Codable, Identifiable {
+//        var id: String {text}
+//        var text: String
+//    }
+//
+//
+//}
+
+extension EventObservation {
+    static let sampleData: [EventObservation] = load("ucategorized.json")
 }

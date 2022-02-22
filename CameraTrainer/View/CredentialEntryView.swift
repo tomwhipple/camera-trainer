@@ -8,27 +8,39 @@
 import SwiftUI
 
 struct CredentialEntryView: View {
-    @EnvironmentObject var modelData: ModelData
+    @State private var userName = ""
+    @State private var userKey = ""
+    
+    @EnvironmentObject var manager: DataManager
     @Environment(\.dismiss) var dismiss
     
     var body: some View {
         VStack{
+            Text("API credentials")
+                .font(.headline)
+                .padding()
             Spacer()
             List {
-                TextField("User name", text:$modelData.userName)
-                TextField("Key", text:$modelData.userKey)
+                TextField("User name", text:$userName)
+                TextField("Key", text:$userKey)
             }
             CommitButton() {
-                modelData.fetchLabels()
+                manager.apiUser = userName
+                manager.apiKey = userKey
+                                
                 dismiss()
             }
             Spacer()
+        }
+        .onAppear {
+            userName = manager.apiUser
+            userKey = manager.apiKey
         }
     }
 }
 
 struct CredentialEntryView_Previews: PreviewProvider {
     static var previews: some View {
-        CredentialEntryView()
+        CredentialEntryView().environmentObject(DataManager())
     }
 }
