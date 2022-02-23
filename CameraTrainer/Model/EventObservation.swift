@@ -32,14 +32,15 @@ struct EventObservation: Hashable, Codable, Identifiable {
     }
 }
 
-//extension EventObservation {
-//    struct EventLabel: Hashable, Codable, Identifiable {
-//        var id: String {text}
-//        var text: String
-//    }
-//
-//
-//}
+struct Classification: Codable {
+    var labels: [String]
+    var event_observation_id: Int
+    
+    init(_ eventObservation: EventObservation) {
+        labels = eventObservation.labels
+        event_observation_id = eventObservation.id
+    }
+}
 
 extension EventObservation {
     static let sampleData: [EventObservation] = load("ucategorized.json")

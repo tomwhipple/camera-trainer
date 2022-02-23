@@ -32,8 +32,19 @@ struct LabelingView: View {
             LabelEntryView()
             LabelSelectionView(event:$event)
             Button {
-                    // TODO upload event!
-                } label: {
+                Task {
+                    if event.labels.count > 0 {
+                        let classification = Classification(event)
+                        do {
+                            let data = try JSONEncoder().encode(classification)
+                            await manager.post(url:DataManager.classifyURL,data:data)
+                        }
+                        catch {
+                            print(error)
+                        }
+                    }
+                }
+            } label: {
                     Text("Commit")
                         .frame(maxWidth:.infinity)
                 }

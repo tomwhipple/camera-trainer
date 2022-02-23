@@ -33,14 +33,20 @@ class DataManager: ObservableObject {
     static var uncategorizedURL: URL {
         URL(string: baseURLString + "/uncategorized")!
     }
+
+    static var classifyURL: URL {
+        URL(string: baseURLString + "/classify")!
+    }
     
+    private var authString: String {
+        "\(apiUser):\(apiKey)".data(using: String.Encoding.utf8)?.base64EncodedString() ??  ""
+    }
+
     func fetch(url: URL) async throws -> Result<Data, Error> {
         try await withCheckedThrowingContinuation { continuation in
-            let authdata = "\(apiUser):\(apiKey)".data(using: String.Encoding.utf8)!
-            
             var request = URLRequest(url: url)
             request.setValue("application/json", forHTTPHeaderField: "Accept")
-            request.setValue("Basic \(authdata.base64EncodedString())", forHTTPHeaderField: "Authorization")
+            request.setValue("Basic \(authString)", forHTTPHeaderField: "Authorization")
             request.httpMethod = "GET"
             print("requesting \(request.url?.absoluteString ?? "<empty>")")
             
@@ -70,8 +76,19 @@ class DataManager: ObservableObject {
             }
             task.resume()
         }
-}
-    
+    }
+        
+    func post(url: URL, data: Data) async {
+        var request = URLRequest(url: url)
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.setValue("Basic \(authString)", forHTTPHeaderField: "Authorization")
+        request.httpMethod = "POST"
+        print("posting to \(request.url?.absoluteString ?? "<empty>")")
+        
+        let task = URLSession.shared.uploadTask(with: request, from: data)
+        task.resume()
+    }
+        
     static func decode<T: Decodable>(_ inputdata: Data) -> T {
         let decoder = JSONDecoder()
         do {
