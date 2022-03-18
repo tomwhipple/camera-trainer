@@ -9,11 +9,10 @@ import SwiftUI
 
 struct LabelSelectionView: View {
     @Binding var event: EventObservation
-    @EnvironmentObject var manager: DataManager
     
     var body: some View {
         List {
-            ForEach(manager.labels, id: \.self) { labelText in
+            ForEach(DataManager.shared.labels.sorted(), id: \.self) { labelText in
                 let isSet = event.labels.contains(labelText) 
                 Button {
                     if isSet {
@@ -30,10 +29,12 @@ struct LabelSelectionView: View {
 
         }
     }
+
 }
 
 struct LabelSelectionView_Previews: PreviewProvider {
     static var previews: some View {
-        LabelSelectionView(event:.constant(EventObservation.sampleData[0])).environmentObject(DataManager())
+        LabelSelectionView(event:.constant(EventObservation.sampleData[0]))        .environmentObject(DataManager.shared)
+
     }
 }

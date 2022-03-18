@@ -11,10 +11,11 @@ struct CredentialEntryView: View {
     @State private var userName = ""
     @State private var userKey = ""
     
-    @EnvironmentObject var manager: DataManager
     @Environment(\.dismiss) var dismiss
     
     var body: some View {
+        let manager = DataManager.shared
+        
         VStack{
             Text("API credentials")
                 .font(.headline)
@@ -28,6 +29,9 @@ struct CredentialEntryView: View {
                 manager.apiUser = userName
                 manager.apiKey = userKey
                                 
+                Task {
+                    await manager.updateAll()
+                }
                 dismiss()
             }
             Spacer()

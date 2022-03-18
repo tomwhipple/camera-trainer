@@ -6,67 +6,50 @@
 //
 
 import SwiftUI
+import Combine
 
+@MainActor
 struct ContentView: View {
-    @EnvironmentObject var manager: DataManager
     @State private var isShowingCredentialSheet = false
+    @ObservedObject var manager: DataManager
+    
+    init() {
+        manager = DataManager.shared
+    }
     
     var body: some View {
-        NavigationView{
-            if manager.uncategorized.count > 0 {
-                LabelingView(event: $manager.uncategorized[0])
+        VStack{
+            if DataManager.shared.uncategorized.count > 0 {
+                    PageView()
             }
             else {
-                Text("Loading")
+                    Text("Loading")
+                    Button("Retry") {
+                        Task {
+                            await DataManager.shared.updateAll()
+                        }
+                    }
             }
+            
         }
-        .onAppear {
-            isShowingCredentialSheet = manager.authenticationNeeded
-        }
+        .frame(alignment: .top)
         .sheet(isPresented: $isShowingCredentialSheet) {
             CredentialEntryView()
         }
         .task {
-            do {
-                let response = try await manager.fetch(url: DataManager.uncategorizedURL)
-                switch response {
-                case .failure(let error):
-                    manager.authenticationNeeded = true
-                    print(error)
-                case .success(let data):
-                    manager.authenticationNeeded = false
-                    manager.uncategorized = DataManager.decode(data)
-                }
-            }
-            catch {
-                print(error)
-            }
-            isShowingCredentialSheet = manager.authenticationNeeded
-        }
-        .task {
-            do {
-                let response = try await manager.fetch(url: DataManager.labelsURL)
-                switch response {
-                case .failure(let error):
-                    manager.authenticationNeeded = true
-                    print(error)
-                case .success(let data):
-                    manager.authenticationNeeded = false
-                    manager.labels = DataManager.decode(data)
-                }
-            }
-            catch {
-                print(error)
-            }
-            isShowingCredentialSheet = manager.authenticationNeeded
+            isShowingCredentialSheet = DataManager.shared.authenticationNeeded
         }
     }
         
 }
 
 struct ContentView_Previews: PreviewProvider {
+
+    init() {
+        DataManager.shared.authenticationNeeded = false
+    }
     
     static var previews: some View {
-        ContentView().environmentObject(DataManager())
+        ContentView()
     }
 }

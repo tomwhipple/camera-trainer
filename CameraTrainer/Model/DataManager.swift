@@ -10,12 +10,13 @@ import SwiftUI
 
 enum DataFetchError: Error {
     case authenticationFailed
-    case unknownHTTPStatus(Int)
+    case unexpectedHTTPStatus(Int)
     case emptyHTTPBody
+    case unknownResponse
     case unknownStateThatShouldNotHappen
 }
 
-
+@MainActor
 class DataManager: ObservableObject {
     @Published var uncategorized: [EventObservation] = []
     @Published var labels: [String] = []
@@ -23,6 +24,13 @@ class DataManager: ObservableObject {
     @AppStorage("apiAuthenticated") var authenticationNeeded = true
     @AppStorage("apiUser") var apiUser = ""
     @AppStorage("apiKey") var apiKey = ""
+    
+    static let shared = DataManager()
+    init() {
+        Task {
+            await self.updateAll()
+        }
+    }
     
     static let baseURLString = "https://home.tomwhipple.com/watcher"
     
@@ -41,42 +49,92 @@ class DataManager: ObservableObject {
     private var authString: String {
         "\(apiUser):\(apiKey)".data(using: String.Encoding.utf8)?.base64EncodedString() ??  ""
     }
-
-    func fetch(url: URL) async throws -> Result<Data, Error> {
-        try await withCheckedThrowingContinuation { continuation in
-            var request = URLRequest(url: url)
-            request.setValue("application/json", forHTTPHeaderField: "Accept")
-            request.setValue("Basic \(authString)", forHTTPHeaderField: "Authorization")
-            request.httpMethod = "GET"
-            print("requesting \(request.url?.absoluteString ?? "<empty>")")
-            
-            let task = URLSession.shared.dataTask(with: request) { inputdata, response, taskerror in
-                if let httpResponse = response as? HTTPURLResponse{
-                    switch httpResponse.statusCode {
-                    case 200, 201:
-                        print("successful response")
-                        if let inputdata = inputdata {
-                            continuation.resume(returning:.success(inputdata))
-                        }
-                        else {
-                            continuation.resume(throwing: DataFetchError.emptyHTTPBody)
-                        }
-                    case 401:
-                        print("not authenticated")
-                        continuation.resume(returning:.failure(DataFetchError.authenticationFailed))
-                    default:
-                        let errstr = "unknown response status: \(httpResponse.statusCode)"
-                        print(errstr)
-                        continuation.resume(throwing: DataFetchError.unknownHTTPStatus(httpResponse.statusCode))
-                    }
-                }
-                else {
-                    continuation.resume(throwing: taskerror ?? DataFetchError.unknownStateThatShouldNotHappen)
-                }
+    
+    func uncateogorizedEventAt(index: Int) -> EventObservation? {
+        guard index < uncategorized.count && index >= 0 else {
+            return nil
+        }
+        return uncategorized[index]
+    }
+    
+    func fetchArray<T:Decodable>(url: URL) async throws -> ([T]) {
+        var request = URLRequest(url: url)
+        request.setValue("application/json", forHTTPHeaderField: "Accept")
+        request.setValue("Basic \(authString)", forHTTPHeaderField: "Authorization")
+        request.httpMethod = "GET"
+        print("requesting array \(request.url?.absoluteString ?? "<empty>")")
+        
+        let (data, response) = try await URLSession.shared.data(for: request)
+        
+        guard let httpResponse = response as? HTTPURLResponse else {
+            throw DataFetchError.unknownResponse
+        }
+        switch httpResponse.statusCode {
+        case 200:
+            self.authenticationNeeded = false
+            // success!!
+            guard !data.isEmpty else {
+                throw DataFetchError.emptyHTTPBody
             }
-            task.resume()
+            
+            self.objectWillChange.send()
+            return Self.decode(data)
+        case 401:
+            self.authenticationNeeded = true
+            throw DataFetchError.authenticationFailed
+        default:
+            throw DataFetchError.unexpectedHTTPStatus(httpResponse.statusCode)
         }
     }
+    
+    func updateEvents() async {
+        do {
+            let uncategorized : [EventObservation] = try await fetchArray(url: Self.uncategorizedURL)
+            self.uncategorized = uncategorized
+            
+        }
+        catch {
+            print("problem while fetching events \(error)")
+        }
+    }
+
+    func updateLabels() async {
+        do {
+            self.labels = try await fetchArray(url: Self.labelsURL)
+        }
+        catch {
+            print("problem while fetching labels \(error)")
+        }
+    }
+    
+    func updateAll() async {
+        await self.updateLabels()
+        await self.updateEvents()
+    }
+    
+    func updateCategorizationAt(index: Int, event: EventObservation) {
+        guard !event.labels.isEmpty && index >= 0 && index < uncategorized.count  else {
+            return
+        }
+        guard uncategorized[index].id == event.id else {
+            fatalError("guard failed: update event id mismatch")
+        }
+        
+        uncategorized[index].labels.append(contentsOf: event.labels)
+        Task {
+            if event.labels.count > 0 {
+                let classification = Classification(event)
+                do {
+                    let data = try JSONEncoder().encode(classification)
+                    await post(url:DataManager.classifyURL,data:data)
+                }
+                catch {
+                    print(error)
+                }
+            }
+        }
+    }
+
         
     func post(url: URL, data: Data) async {
         var request = URLRequest(url: url)

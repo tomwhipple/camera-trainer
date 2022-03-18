@@ -25,6 +25,8 @@
 		D146523527C5408D00EA71DE /* DataManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D146523427C5408D00EA71DE /* DataManager.swift */; };
 		D146523927C55FC400EA71DE /* LabelSelectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D146523827C55FC400EA71DE /* LabelSelectionView.swift */; };
 		D146523C27C567EF00EA71DE /* Utilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = D146523B27C567EF00EA71DE /* Utilities.swift */; };
+		D146524A27C6C84300EA71DE /* PageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D146524827C6C84200EA71DE /* PageViewController.swift */; };
+		D146524B27C6C84300EA71DE /* PageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D146524927C6C84200EA71DE /* PageView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -66,6 +68,8 @@
 		D146523427C5408D00EA71DE /* DataManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataManager.swift; sourceTree = "<group>"; };
 		D146523827C55FC400EA71DE /* LabelSelectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LabelSelectionView.swift; sourceTree = "<group>"; };
 		D146523B27C567EF00EA71DE /* Utilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Utilities.swift; sourceTree = "<group>"; };
+		D146524827C6C84200EA71DE /* PageViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PageViewController.swift; sourceTree = "<group>"; };
+		D146524927C6C84200EA71DE /* PageView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PageView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -117,12 +121,12 @@
 			isa = PBXGroup;
 			children = (
 				D14651B327C0224C00EA71DE /* CameraTrainerApp.swift */,
+				D14651E227C0275E00EA71DE /* Model */,
 				D14651E127C0274C00EA71DE /* View */,
 				D14651B727C0224D00EA71DE /* Assets.xcassets */,
 				D14651E527C027E700EA71DE /* uncategorized.json */,
 				D14651EF27C15C3000EA71DE /* labels.json */,
 				D14651B927C0224D00EA71DE /* Preview Content */,
-				D14651E227C0275E00EA71DE /* Model */,
 			);
 			path = CameraTrainer;
 			sourceTree = "<group>";
@@ -162,6 +166,8 @@
 				D14651ED27C1521400EA71DE /* LabelingView.swift */,
 				D14651F127C2BCC000EA71DE /* CredentialEntryView.swift */,
 				D14651F327C2D79A00EA71DE /* CommitButton.swift */,
+				D146524927C6C84200EA71DE /* PageView.swift */,
+				D146524827C6C84200EA71DE /* PageViewController.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -311,6 +317,8 @@
 				D14651DE27C022D800EA71DE /* VideoView.swift in Sources */,
 				D146523527C5408D00EA71DE /* DataManager.swift in Sources */,
 				D14651B627C0224C00EA71DE /* ContentView.swift in Sources */,
+				D146524A27C6C84300EA71DE /* PageViewController.swift in Sources */,
+				D146524B27C6C84300EA71DE /* PageView.swift in Sources */,
 				D14651F427C2D79A00EA71DE /* CommitButton.swift in Sources */,
 				D14651EE27C1521400EA71DE /* LabelingView.swift in Sources */,
 				D14651EC27C0618F00EA71DE /* LabelEntryView.swift in Sources */,
@@ -479,6 +487,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"CameraTrainer/Preview Content\"";
+				DEVELOPMENT_TEAM = 8CPBGW8MQ6;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
@@ -507,6 +516,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"CameraTrainer/Preview Content\"";
+				DEVELOPMENT_TEAM = 8CPBGW8MQ6;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;

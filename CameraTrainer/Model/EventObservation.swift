@@ -43,5 +43,5 @@ struct Classification: Codable {
 }
 
 extension EventObservation {
-    static let sampleData: [EventObservation] = load("ucategorized.json")
+    static let sampleData: [EventObservation] = load("uncategorized.json")
 }

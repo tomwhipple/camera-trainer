@@ -8,13 +8,9 @@
 import SwiftUI
 
 struct LabelingView: View {
-    @Binding var event: EventObservation
-    @EnvironmentObject var manager: DataManager
+    let index: Int
+    @State var event: EventObservation
     
-//    var obsIdx: Int {
-//        modelData.uncategorized.firstIndex(where:{ $0.id == event.id })!
-//    }
-        
     var body: some View {
         VStack {
             VideoView(videoURL: event.url)
@@ -31,36 +27,18 @@ struct LabelingView: View {
             .padding(.horizontal)
             LabelEntryView()
             LabelSelectionView(event:$event)
-            Button {
-                Task {
-                    if event.labels.count > 0 {
-                        let classification = Classification(event)
-                        do {
-                            let data = try JSONEncoder().encode(classification)
-                            await manager.post(url:DataManager.classifyURL,data:data)
-                        }
-                        catch {
-                            print(error)
-                        }
-                    }
-                }
-            } label: {
-                    Text("Commit")
-                        .frame(maxWidth:.infinity)
-                }
-                .padding(/*@START_MENU_TOKEN@*/.all/*@END_MENU_TOKEN@*/)
-                .background(.green)
-                .foregroundColor(.white)
-                .clipShape(Capsule())
-                .padding()
 
         }
+        .onDisappear {
+            DataManager.shared.updateCategorizationAt(index: index, event: event)
+        }
     }
+    
 }
 
 struct LabelingView_Previews: PreviewProvider {
     
     static var previews: some View {
-        LabelingView(event: .constant(EventObservation.sampleData[0])).environmentObject(DataManager())
+        LabelingView(index: 0, event: EventObservation.sampleData[0]).environmentObject(DataManager.shared)
     }
 }
