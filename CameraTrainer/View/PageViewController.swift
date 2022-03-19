@@ -52,17 +52,22 @@ struct PageViewController: UIViewControllerRepresentable {
         }
         
         func pageViewController(_ pageViewController: UIPageViewController, viewControllerAfter viewController: UIViewController) -> UIViewController? {
-            
             guard let vc = viewController as? UIHostingController<LabelingView> else {
                 return nil
             }
             
             let nextIndex = vc.rootView.index + 1
-            guard nextIndex < DataManager.shared.uncategorized.count else {
+            guard nextIndex < manager.uncategorized.count else {
                 return nil
             }
             
-            return UIHostingController(rootView: LabelingView(index: nextIndex, event: DataManager.shared.uncategorized[nextIndex]))
+            if manager.uncategorized.count - nextIndex < 5 {
+                Task {
+                    await manager.updateEvents()
+                }
+            }
+            
+            return UIHostingController(rootView: LabelingView(index: nextIndex, event: manager.uncategorized[nextIndex]))
         }
         
         func pageViewController(

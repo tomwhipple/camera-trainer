@@ -89,9 +89,8 @@ class DataManager: ObservableObject {
     
     func updateEvents() async {
         do {
-            let uncategorized : [EventObservation] = try await fetchArray(url: Self.uncategorizedURL)
-            self.uncategorized = uncategorized
-            
+            let newUncategorized : [EventObservation] = try await fetchArray(url: Self.uncategorizedURL)
+            self.uncategorized.append(contentsOf: newUncategorized)
         }
         catch {
             print("problem while fetching events \(error)")
