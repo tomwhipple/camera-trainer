@@ -9,11 +9,7 @@ import SwiftUI
 
 struct LabelEntryView: View {
     @State private var newLabel = String("")
-    @ObservedObject var manager: DataManager
-    
-    init() {
-        manager = DataManager.shared
-    }
+    @EnvironmentObject var manager: DataManager
     
     var body: some View {
         HStack {

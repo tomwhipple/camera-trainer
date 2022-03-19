@@ -10,9 +10,11 @@ import SwiftUI
 struct LabelSelectionView: View {
     @Binding var event: EventObservation
     
+    @EnvironmentObject var manager: DataManager
+    
     var body: some View {
         List {
-            ForEach(DataManager.shared.labels.sorted(), id: \.self) { labelText in
+            ForEach(manager.labels, id: \.self) { labelText in
                 let isSet = event.labels.contains(labelText) 
                 Button {
                     if isSet {

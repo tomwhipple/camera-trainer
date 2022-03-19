@@ -99,7 +99,7 @@ class DataManager: ObservableObject {
 
     func updateLabels() async {
         do {
-            self.labels = try await fetchArray(url: Self.labelsURL)
+            self.labels = try await fetchArray(url: Self.labelsURL).sorted()
         }
         catch {
             print("problem while fetching labels \(error)")
