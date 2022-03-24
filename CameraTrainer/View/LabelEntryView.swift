@@ -13,6 +13,12 @@ struct LabelEntryView: View {
     
     func submit() {
         if (!newLabel.isEmpty && !manager.labels.contains(newLabel)){
+            
+            newLabel = newLabel.replacingOccurrences(of: " ", with: "-")
+            while newLabel.last == "-" {
+                newLabel.removeLast()
+            }
+            
             manager.labels.append(newLabel.lowercased())
             manager.labels.sort()
             
@@ -24,6 +30,7 @@ struct LabelEntryView: View {
         HStack {
             TextField("Add a label", text: $newLabel)
                 .disableAutocorrection(true)
+                .autocapitalization(.none)
                 .submitLabel(.done)
                 .onSubmit {
                     submit()
