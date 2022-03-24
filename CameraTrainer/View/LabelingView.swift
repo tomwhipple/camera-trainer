@@ -25,7 +25,6 @@ struct LabelingView: View {
             .multilineTextAlignment(.leading)
             .foregroundColor(.gray)
             .padding(.horizontal)
-            LabelEntryView()
             LabelSelectionView(event:$event)
 
         }

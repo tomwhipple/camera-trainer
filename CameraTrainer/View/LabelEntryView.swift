@@ -11,24 +11,31 @@ struct LabelEntryView: View {
     @State private var newLabel = String("")
     @EnvironmentObject var manager: DataManager
     
+    func submit() {
+        if (!newLabel.isEmpty && !manager.labels.contains(newLabel)){
+            manager.labels.append(newLabel.lowercased())
+            manager.labels.sort()
+            
+            newLabel = ""
+        }
+    }
+    
     var body: some View {
         HStack {
             TextField("Add a label", text: $newLabel)
                 .disableAutocorrection(true)
-            Button {
-                if (!newLabel.isEmpty && !manager.labels.contains(newLabel)){
-                    
-                    manager.labels.append(newLabel.lowercased())
-                    manager.labels.sort()
-                    newLabel = ""
-                    
+                .submitLabel(.done)
+                .onSubmit {
+                    submit()
                 }
+            Button {
+                submit()
             } label: {
                 Label("Add Label", systemImage:"plus")
                     .labelStyle(.iconOnly)
             }
         }
-        .padding()
+        .padding(.horizontal)
     }
 }
 
