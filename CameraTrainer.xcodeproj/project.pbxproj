@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		D10C60FB27F0E5320011E0ED /* ErrorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D10C60FA27F0E5320011E0ED /* ErrorView.swift */; };
 		D14651B427C0224C00EA71DE /* CameraTrainerApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = D14651B327C0224C00EA71DE /* CameraTrainerApp.swift */; };
 		D14651B627C0224C00EA71DE /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D14651B527C0224C00EA71DE /* ContentView.swift */; };
 		D14651B827C0224D00EA71DE /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D14651B727C0224D00EA71DE /* Assets.xcassets */; };
@@ -47,6 +48,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		D10C60FA27F0E5320011E0ED /* ErrorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ErrorView.swift; sourceTree = "<group>"; };
 		D14651B027C0224C00EA71DE /* CameraTrainer.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CameraTrainer.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		D14651B327C0224C00EA71DE /* CameraTrainerApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraTrainerApp.swift; sourceTree = "<group>"; };
 		D14651B527C0224C00EA71DE /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -168,6 +170,7 @@
 				D14651F327C2D79A00EA71DE /* CommitButton.swift */,
 				D146524927C6C84200EA71DE /* PageView.swift */,
 				D146524827C6C84200EA71DE /* PageViewController.swift */,
+				D10C60FA27F0E5320011E0ED /* ErrorView.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -322,6 +325,7 @@
 				D14651F427C2D79A00EA71DE /* CommitButton.swift in Sources */,
 				D14651EE27C1521400EA71DE /* LabelingView.swift in Sources */,
 				D14651EC27C0618F00EA71DE /* LabelEntryView.swift in Sources */,
+				D10C60FB27F0E5320011E0ED /* ErrorView.swift in Sources */,
 				D146523C27C567EF00EA71DE /* Utilities.swift in Sources */,
 				D14651F227C2BCC000EA71DE /* CredentialEntryView.swift in Sources */,
 				D146523927C55FC400EA71DE /* LabelSelectionView.swift in Sources */,

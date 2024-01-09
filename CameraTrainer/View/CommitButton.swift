@@ -15,6 +15,7 @@ struct CommitButton: View {
             action()
             } label: {
                 Text("Commit")
+                    .fontWeight(.bold)
                     .frame(maxWidth:.infinity)
             }
             .padding(/*@START_MENU_TOKEN@*/.all/*@END_MENU_TOKEN@*/)

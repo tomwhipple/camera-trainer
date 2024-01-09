@@ -62,6 +62,7 @@ struct PageViewController: UIViewControllerRepresentable {
             }
             
             if manager.uncategorized.count - nextIndex < 5 {
+                print(manager.uncategorized)
                 Task {
                     await manager.updateEvents()
                 }

@@ -6,11 +6,12 @@
 //
 
 import SwiftUI
-import Combine
+//import Combine
 
 @MainActor
 struct ContentView: View {
     @State private var isShowingCredentialSheet = false
+    @State private var isShowingErrorSheet = false
     @ObservedObject var manager: DataManager
     
     init() {
@@ -36,8 +37,15 @@ struct ContentView: View {
         .sheet(isPresented: $isShowingCredentialSheet) {
             CredentialEntryView()
         }
+        .sheet(isPresented: $isShowingErrorSheet) {
+            manager.networkErrors = []
+            manager.networkErrorsArePresent = false
+        } content: {
+            ErrorView(errors: manager.networkErrors)
+        }
         .task {
             isShowingCredentialSheet = DataManager.shared.authenticationNeeded
+            isShowingErrorSheet = DataManager.shared.networkErrorsArePresent
         }
     }
         

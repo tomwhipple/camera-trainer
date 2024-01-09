@@ -17,7 +17,7 @@ struct LabelingView: View {
             HStack(alignment: .top) {
                 Text("\(event.id)")
                 Spacer()
-                Text(event.capture_time)
+                Text("\(event.capture_time.ISO8601Format())")
                 Spacer()
                 Text(event.scene_name)
             }

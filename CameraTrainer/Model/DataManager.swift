@@ -20,6 +20,8 @@ enum DataFetchError: Error {
 class DataManager: ObservableObject {
     @Published var uncategorized: [EventObservation] = []
     @Published var labels: [String] = []
+    @Published var networkErrors: [String] = []
+    @Published var networkErrorsArePresent = false
     
     @AppStorage("apiAuthenticated") var authenticationNeeded = true
     @AppStorage("apiUser") var apiUser = ""
@@ -32,8 +34,8 @@ class DataManager: ObservableObject {
         }
     }
     
-    static let baseURLString = "https://home.tomwhipple.com/watcher"
-    
+    static let baseURLString = "http://mira.local:5000"
+
     static var labelsURL: URL {
         URL(string: baseURLString + "/labels")!
     }
@@ -88,8 +90,16 @@ class DataManager: ObservableObject {
     }
     
     func updateEvents() async {
+        guard var components = URLComponents(url: Self.uncategorizedURL, resolvingAgainstBaseURL: false) else {
+            fatalError("invalid application base URL")
+        }
         do {
-            let newUncategorized : [EventObservation] = try await fetchArray(url: Self.uncategorizedURL)
+            if let oldestEvent = self.uncategorized.min(by:{$0.capture_time < $1.capture_time}) {
+                let query = [URLQueryItem(name: "before", value: oldestEvent.capture_time.ISO8601Format())]
+                components.queryItems = query
+            }
+            
+            let newUncategorized : [EventObservation] = try await fetchArray(url:components.url!)
             self.uncategorized.append(contentsOf: newUncategorized)
         }
         catch {
@@ -142,12 +152,40 @@ class DataManager: ObservableObject {
         request.httpMethod = "POST"
         print("posting to \(request.url?.absoluteString ?? "<empty>")")
         
-        let task = URLSession.shared.uploadTask(with: request, from: data)
-        task.resume()
+//        let task = URLSession.shared.uploadTask(with: request, from: data)
+//        task.resume()
+        
+        do {
+            let (_, response) = try await URLSession.shared.upload(for: request, from: data)
+            
+            guard let httpResponse = response as? HTTPURLResponse else {
+                throw DataFetchError.unknownResponse
+            }
+            switch httpResponse.statusCode {
+            case 200, 201:
+                self.authenticationNeeded = false
+                // success!!
+                return
+            case 401:
+                self.authenticationNeeded = true
+                throw DataFetchError.authenticationFailed
+            default:
+                throw DataFetchError.unexpectedHTTPStatus(httpResponse.statusCode)
+            }
+        }
+        catch {
+            print (error)
+            self.networkErrorsArePresent = true
+            self.networkErrors.append(error.localizedDescription)
+            self.objectWillChange.send()
+        }
     }
         
     static func decode<T: Decodable>(_ inputdata: Data) -> T {
+        
+        
         let decoder = JSONDecoder()
+        decoder.dateDecodingStrategy = .iso8601
         do {
             return try decoder.decode(T.self, from: inputdata)
         } catch {
