@@ -2,8 +2,6 @@
 
 This is an iPhone app designed to permit the fast labling of video clips in order to generate training data for experiments with machine learning. Since a good dataset is large, UI speed is essential so this app is strictly no-frills.
 
-_NOTE: A secondary goal has been to re-learn iOS development, since much has changed in the last 10 years._
-
 ## Workflow
 
 A user is presented with a video clip and a list of previously used labels. If a suitable label is not shown, a new one can be added. 
