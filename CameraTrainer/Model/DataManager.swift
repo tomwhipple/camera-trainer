@@ -27,14 +27,21 @@ class DataManager: ObservableObject {
     @AppStorage("apiUser") var apiUser = ""
     @AppStorage("apiKey") var apiKey = ""
     
+    let tempdir: URL = FileManager().temporaryDirectory
     static let shared = DataManager()
     init() {
         Task {
             await self.updateAll()
         }
+        do {
+            try FileManager().createDirectory(at: tempdir, withIntermediateDirectories: true)
+        } catch {
+            print("Failed to create tempdir: \(error)")
+        }
     }
     
-    static let baseURLString = "http://mira.local:5000"
+    static let baseURLString = "http://mira.local/watcher"
+//    static let baseURLString = "http://mira.local:5000"
 
     static var labelsURL: URL {
         URL(string: baseURLString + "/labels")!
@@ -89,6 +96,10 @@ class DataManager: ObservableObject {
         }
     }
     
+    func getVideo(from url: URL, completion: @Sendable @escaping (Data?, URLResponse?, Error?) -> ()) {
+        URLSession.shared.dataTask(with: url, completionHandler: completion).resume()
+    }
+    
     func updateEvents() async {
         guard var components = URLComponents(url: Self.uncategorizedURL, resolvingAgainstBaseURL: false) else {
             fatalError("invalid application base URL")
@@ -100,7 +111,24 @@ class DataManager: ObservableObject {
             }
             
             let newUncategorized : [EventObservation] = try await fetchArray(url:components.url!)
-            self.uncategorized.append(contentsOf: newUncategorized)
+            for event in newUncategorized {
+                getVideo(from: event.url!) { data, response, error in
+                    guard let data = data, error == nil else { return }
+                    let filename = response?.suggestedFilename ?? event.url!.lastPathComponent
+                    print("Downloaded \(filename)")
+                    
+                    // always update the UI from the main thread
+                    
+                    // note that we're now only adding the event to the main uncategorized list *after* the video finishes download.
+                    DispatchQueue.main.async() { [weak self] in
+                        let fileurl = self!.tempdir.appendingPathComponent(filename)
+                        FileManager().createFile(atPath: fileurl.path, contents: data)
+                        var newevent = event
+                        newevent.setCacheFile(fileurl)
+                        self?.uncategorized.append(newevent)
+                    }
+                }
+            }
         }
         catch {
             print("problem while fetching events \(error)")
@@ -182,8 +210,6 @@ class DataManager: ObservableObject {
     }
         
     static func decode<T: Decodable>(_ inputdata: Data) -> T {
-        
-        
         let decoder = JSONDecoder()
         decoder.dateDecodingStrategy = .iso8601
         do {

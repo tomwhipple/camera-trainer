@@ -14,11 +14,12 @@ struct EventObservation: Hashable, Codable, Identifiable {
     private var video_file: String
     private var video_url: String
     var labels: [String] = []
-    
+
     var id: Int {event_observation_id}
-    
+    var cacheFile: URL?
     var url: URL? {
-        URL(string:video_url)
+        if cacheFile != nil { return cacheFile }
+        return URL(string:video_url)
     }
     
     mutating func insertLabel(_ labelText: String) {
@@ -29,6 +30,10 @@ struct EventObservation: Hashable, Codable, Identifiable {
         if let lblIdx = labels.firstIndex(of: labelText) {
             labels.remove(at: lblIdx)
         }
+    }
+    
+    mutating func setCacheFile(_ u: URL) {
+        cacheFile = u
     }
 }
 

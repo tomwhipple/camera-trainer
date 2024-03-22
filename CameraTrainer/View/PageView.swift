@@ -1,6 +1,5 @@
 //
 //  PageView.swift
-//  Landmarks
 //
 //  Created by Tom Whipple on 2/23/22.
 //
